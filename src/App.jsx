@@ -1,48 +1,88 @@
-import "./App.css";
-import { Route, Routes, Link, useNavigate } from "react-router-dom";
-import { useReducer } from "react";
-import Home from "./pages/Home";
-import Diary from "./pages/Diary";
-import New from "./pages/New";
-import Edit from "./pages/Edit";
-import Notfound from "./pages/Notfound.jsx";
-import Button from "./components/Button.jsx";
-import Header from "./components/Header.jsx";
+import './App.css';
+import { Route, Routes, Link, useNavigate } from 'react-router-dom';
+import { useReducer, useRef, createContext } from 'react';
+import Home from './pages/Home';
+import Diary from './pages/Diary';
+import New from './pages/New';
+import Edit from './pages/Edit';
+import Notfound from './pages/Notfound.jsx';
 
+// 샘플 데이터
 const mockData = [
   {
     id: 1,
     createDate: new Date().getTime(),
     emotionId: 1,
-    content: "1번 일기 내용",
+    content: '1번 일기 내용',
   },
   {
     id: 2,
     createDate: new Date().getTime(),
     emotionId: 2,
-    content: "2번 일기 내용",
+    content: '2번 일기 내용',
   },
 ];
 
 function reducer(state, action) {
-  return state;
+  switch (action.type) {
+    case 'CREATE': // 신규 항목 추가
+      return [action.data, ...state];
+    case 'UPDATE': // 수정
+      return state.map((item) => (String(item.id) === String(action.data.id) ? action.data : item));
+    case 'DELETE': // 삭제
+      return state.filter((item) => String(item.id) !== String(action.id));
+    default:
+      return state;
+  }
 }
+
+const DiaryStateContext = createContext();
+const DiaryDispatchContext = createContext();
 
 // 1. "/" : 모든 일기를 조회하는 Home 페이지
 // 2. "/new" : 새로운 일기를 작성하는 New 페이지
 // 3. "/diary" : 일기를 상세히 조회하는 diary 페이지
 function App() {
-  const nav = useNavigate();
+  const [data, dispatch] = useReducer(reducer, mockData);
+  const idRef = useRef(3); // id 2번까지 mock 데이터
 
-  const onClickButton = () => {
-    nav("/new");
+  // 등록
+  const onCreate = (createdDate, emotionId, content) => {
+    dispatch({
+      type: 'CREATE',
+      data: {
+        id: idRef.current,
+        createdDate,
+        emotionId,
+        content,
+      },
+    });
   };
 
-  const [data, dispatch] = useReducer(reducer, mockData);
+  // 수정
+  const onUpdate = (id, createdDate, emotionId, content) => {
+    dispatch({
+      type: 'UPDATE',
+      data: {
+        id,
+        createdDate,
+        emotionId,
+        content,
+      },
+    });
+  };
+
+  // 수정
+  const onDelete = (id) => {
+    dispatch({
+      type: 'DELETE',
+      id,
+    });
+  };
 
   return (
     <>
-      <Header
+      {/* <Header
         title={"Header"}
         leftChild={<Button text={"left"}></Button>}
         rightChild={<Button text={"right"}></Button>}
@@ -70,16 +110,21 @@ function App() {
         onClick={() => {
           console.log("버튼 클릭");
         }}
-      ></Button>
+      ></Button> */}
 
-      {/* Routes 컴포넌트 안에는 Route 컴포넌트만 가능 */}
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/new" element={<New />} />
-        <Route path="/edit/:id" element={<Edit />} />
-        <Route path="/diary/:id" element={<Diary />} />
-        <Route path="/*" element={<Notfound />} />
-      </Routes>
+      {/* diaryStateContext : props drilling을 방지하기 위한 데이터 전달 value 는 현재 useReducer에서 생성한 data 전달 */}
+      <DiaryStateContext value={data}>
+        <DiaryDispatchContext value={{ onCreate, onUpdate, onDelete }}>
+          {/* Routes 컴포넌트 안에는 Route 컴포넌트만 가능 */}
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/new" element={<New />} />
+            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="/diary/:id" element={<Diary />} />
+            <Route path="/*" element={<Notfound />} />
+          </Routes>
+        </DiaryDispatchContext>
+      </DiaryStateContext>
     </>
   );
 }
