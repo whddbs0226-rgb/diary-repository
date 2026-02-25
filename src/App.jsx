@@ -11,15 +11,21 @@ import Notfound from './pages/Notfound.jsx';
 const mockData = [
   {
     id: 1,
-    createDate: new Date().getTime(),
+    createdDate: new Date('2026-02-25').getTime(),
     emotionId: 1,
     content: '1번 일기 내용',
   },
   {
     id: 2,
-    createDate: new Date().getTime(),
+    createdDate: new Date('2026-02-24').getTime(),
     emotionId: 2,
     content: '2번 일기 내용',
+  },
+  {
+    id: 3,
+    createdDate: new Date('2026-01-20').getTime(),
+    emotionId: 3,
+    content: '3번 일기 내용',
   },
 ];
 
@@ -36,15 +42,15 @@ function reducer(state, action) {
   }
 }
 
-const DiaryStateContext = createContext();
-const DiaryDispatchContext = createContext();
+export const DiaryStateContext = createContext();
+export const DiaryDispatchContext = createContext();
 
 // 1. "/" : 모든 일기를 조회하는 Home 페이지
 // 2. "/new" : 새로운 일기를 작성하는 New 페이지
 // 3. "/diary" : 일기를 상세히 조회하는 diary 페이지
 function App() {
   const [data, dispatch] = useReducer(reducer, mockData);
-  const idRef = useRef(3); // id 2번까지 mock 데이터
+  const idRef = useRef(4); // id 2번까지 mock 데이터
 
   // 등록
   const onCreate = (createdDate, emotionId, content) => {
