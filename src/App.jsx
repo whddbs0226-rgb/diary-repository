@@ -1,6 +1,6 @@
 import './App.css';
 import { Route, Routes, Link, useNavigate } from 'react-router-dom';
-import { useReducer, useRef, createContext } from 'react';
+import { useReducer, useRef, createContext, useEffect, useState } from 'react';
 import Home from './pages/Home';
 import Diary from './pages/Diary';
 import New from './pages/New';
@@ -9,7 +9,7 @@ import Notfound from './pages/Notfound.jsx';
 
 // 샘플 데이터
 const mockData = [
-  {
+  /*   {
     id: 1,
     createdDate: new Date('2026-02-25').getTime(),
     emotionId: 1,
@@ -26,20 +26,36 @@ const mockData = [
     createdDate: new Date('2026-01-20').getTime(),
     emotionId: 3,
     content: '3번 일기 내용',
-  },
+  }, */
 ];
 
+// state : 현재의 상태 (초기에는 mokData)
+// action : dispatch에 담은 내용
 function reducer(state, action) {
+  let nextState;
   switch (action.type) {
-    case 'CREATE': // 신규 항목 추가
-      return [action.data, ...state];
-    case 'UPDATE': // 수정
-      return state.map((item) => (String(item.id) === String(action.data.id) ? action.data : item));
-    case 'DELETE': // 삭제
-      return state.filter((item) => String(item.id) !== String(action.id));
+    case 'INIT': // 페이지 로드 시 최초 한번만 실행
+      return action.data;
+    case 'CREATE': {
+      // return [action.data, ...state]; // 신규 항목 추가
+      nextState = [action.data, ...state];
+      break;
+    }
+    case 'UPDATE': {
+      nextState = state.map((item) => (String(item.id) === String(action.data.id) ? action.data : item));
+      break;
+    }
+    case 'DELETE': {
+      nextState = state.filter((item) => String(item.id) !== String(action.id));
+      break;
+    }
     default:
       return state;
   }
+
+  // 로컬스트리지에 저장
+  localStorage.setItem('diary', JSON.stringify(nextState));
+  return nextState;
 }
 
 export const DiaryStateContext = createContext();
@@ -49,8 +65,54 @@ export const DiaryDispatchContext = createContext();
 // 2. "/new" : 새로운 일기를 작성하는 New 페이지
 // 3. "/diary" : 일기를 상세히 조회하는 diary 페이지
 function App() {
-  const [data, dispatch] = useReducer(reducer, mockData);
-  const idRef = useRef(4); // id 2번까지 mock 데이터
+  const [isLoading, setIsLoading] = useState(true);
+  // dispatch 호출 시 useReducer가 실행되며 reducer 호출
+  const [data, dispatch] = useReducer(reducer, []); //  mockData : 초기값, 빈값은 []
+  const idRef = useRef(0); // id 값
+
+  useEffect(() => {
+    const storedData = localStorage.getItem('diary');
+
+    if (!storedData) {
+      setIsLoading(false);
+      return;
+    }
+
+    const paredData = JSON.parse(storedData);
+
+    if (!Array.isArray(paredData)) {
+      setIsLoading(false);
+      return;
+    }
+
+    let maxId = 0;
+    paredData.forEach((item) => {
+      if (Number(item.id) > maxId) {
+        maxId = Number(item.id);
+      }
+    });
+
+    idRef.current = maxId + 1;
+
+    dispatch({
+      type: 'INIT',
+      data: paredData,
+    });
+    setIsLoading(false);
+  }, []); // useEffect 사용 시 마지막 [] 는 최초에 한번만 실행
+
+  /*
+  // NOTE : 로컬스토리지(간단한 웹 DB 사용해서 데이터 등록, 사용, 삭제 )
+
+  localStorage.setItem('test', 'hello');
+  localStorage.setItem('person', JSON.stringify({ name: 'personName' })); // 객체는 문자열화 해서 저장
+
+  localStorage.setItem('get', 'hello');
+  JSON.parse(localStorage.getItem("person"))  // JSON 화 해서 사용
+
+  localStorage.removeItem('test');
+  localStorage.removeItem('person');
+  */
 
   // 등록
   const onCreate = (createdDate, emotionId, content) => {
@@ -86,6 +148,10 @@ function App() {
     });
   };
 
+  if (isLoading) {
+    return <div>데이터 로딩 중입니다.</div>;
+  }
+
   return (
     <>
       {/* <Header
@@ -118,16 +184,32 @@ function App() {
         }}
       ></Button> */}
 
+      {/* NOTE : context 파일 분리, provier */}
       {/* diaryStateContext : props drilling을 방지하기 위한 데이터 전달 value 는 현재 useReducer에서 생성한 data 전달 */}
       <DiaryStateContext value={data}>
         <DiaryDispatchContext value={{ onCreate, onUpdate, onDelete }}>
           {/* Routes 컴포넌트 안에는 Route 컴포넌트만 가능 */}
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/new" element={<New />} />
-            <Route path="/edit/:id" element={<Edit />} />
-            <Route path="/diary/:id" element={<Diary />} />
-            <Route path="/*" element={<Notfound />} />
+            <Route
+              path="/"
+              element={<Home />}
+            />
+            <Route
+              path="/new"
+              element={<New />}
+            />
+            <Route
+              path="/edit/:id"
+              element={<Edit />}
+            />
+            <Route
+              path="/diary/:id"
+              element={<Diary />}
+            />
+            <Route
+              path="/*"
+              element={<Notfound />}
+            />
           </Routes>
         </DiaryDispatchContext>
       </DiaryStateContext>

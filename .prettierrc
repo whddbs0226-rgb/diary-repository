@@ -3,7 +3,7 @@
   "semi": true,
   "tabWidth": 2,
   "trailingComma": "all",
-  "printWidth": 150,
-  "arrowParens": "always",
-  "jsxSelfClosing": true
+  "printWidth": 120,
+  "singleAttributePerLine": true,
+  "arrowParens": "always"
 }

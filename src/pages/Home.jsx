@@ -3,6 +3,7 @@ import Button from '../components/Button';
 import DiaryList from '../components/DiaryList';
 import { useState, useContext } from 'react';
 import { DiaryStateContext } from '../App';
+import usePageTitle from '../hooks/usePageTitle';
 
 const getMonthlyData = (pivotDate, data) => {
   const beginTime = new Date(pivotDate.getFullYear(), pivotDate.getMonth(), 1, 0, 0, 0).getTime(); // 년 월 1일 0시 0분 0초
@@ -12,6 +13,7 @@ const getMonthlyData = (pivotDate, data) => {
 };
 
 const Home = () => {
+  usePageTitle('감정 일기장'); // page Title
   const data = useContext(DiaryStateContext); // 일기 데이터 호출
   const [pivotDate, setPivotDate] = useState(new Date());
 
@@ -29,8 +31,18 @@ const Home = () => {
     <div>
       <Header
         title={`${pivotDate.getFullYear()}년 ${pivotDate.getMonth() + 1}월`}
-        leftChild={<Button onClick={onDecreaseMonth} text={'<'} />}
-        rightChild={<Button onClick={onIncreaseMonth} text={'>'} />}
+        leftChild={
+          <Button
+            onClick={onDecreaseMonth}
+            text={'<'}
+          />
+        }
+        rightChild={
+          <Button
+            onClick={onIncreaseMonth}
+            text={'>'}
+          />
+        }
       />
       <DiaryList data={monthlyData} />
     </div>
