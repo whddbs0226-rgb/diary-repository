@@ -12,7 +12,11 @@ export default defineConfig([
     plugins: {
       react,
     },
-    extends: [js.configs.recommended, reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
+    extends: [
+      js.configs.recommended,
+      reactHooks.configs.flat.recommended,
+      reactRefresh.configs.vite,
+    ],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -26,6 +30,8 @@ export default defineConfig([
       'no-unused-vars': 'off',
       'react/prop-types': 'off',
       'react/self-closing-comp': ['error'],
+
+      'react-hooks/set-state-in-effect': 'off', // useEffect 관련 경고메세지 제거
     },
   },
 ]);
