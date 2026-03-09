@@ -12,11 +12,7 @@ export default defineConfig([
     plugins: {
       react,
     },
-    extends: [
-      js.configs.recommended,
-      reactHooks.configs.flat.recommended,
-      reactRefresh.configs.vite,
-    ],
+    extends: [js.configs.recommended, reactHooks.configs.flat.recommended, reactRefresh.configs.vite],
     languageOptions: {
       ecmaVersion: 2020,
       globals: globals.browser,
@@ -27,7 +23,7 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': 'off',
+      'no-unused-vars': 'on',
       'react/prop-types': 'off',
       'react/self-closing-comp': ['error'],
 
