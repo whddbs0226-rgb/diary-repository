@@ -2,6 +2,7 @@ import './Viewer.css';
 import { getEmotionImage } from '../util/get-emotion-image';
 import { emotionList } from '../util/constants';
 
+// 상세 조회 페이지
 const Viewer = ({ emotionId, content }) => {
   const emotionItem = emotionList.find((item) => String(item.emotionId) === String(emotionId));
 

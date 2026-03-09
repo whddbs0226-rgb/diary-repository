@@ -3,6 +3,7 @@ import { getEmotionImage } from '../util/get-emotion-image';
 import Button from './Button';
 import './DiaryItem.css';
 
+// home 화면의 리스트 항목 item
 const DiaryItem = ({ id, emotionId, createdDate, content }) => {
   const nav = useNavigate();
 

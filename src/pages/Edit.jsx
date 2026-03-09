@@ -3,7 +3,7 @@ import Header from '../components/Header';
 import Button from '../components/Button';
 import Editor from '../components/Editor';
 import { useContext } from 'react';
-import { DiaryDispatchContext } from '../App';
+import { DiaryDispatchContext } from '../contexts/DiaryContext';
 import useDiary from '../hooks/useDiary';
 import usePageTitle from '../hooks/usePageTitle';
 
@@ -46,7 +46,7 @@ const Edit = () => {
           <Button
             onClick={onClickDelete}
             text={'삭제하기'}
-            type={'NEGATIVE'}
+            variant="NEGATIVE"
           />
         }
       />

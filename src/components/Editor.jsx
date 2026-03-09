@@ -1,22 +1,25 @@
-import { useState, useEffect } from "react";
-import Button from "./Button";
-import "./Editor.css";
-import EmotionItem from "./EmotionItem";
-import { useNavigate } from "react-router-dom";
-import { emotionList } from "../util/constants";
-import { getStringedDate } from "../util/get-stringed-date";
+import { useState, useEffect } from 'react';
+import Button from './Button';
+import './Editor.css';
+import EmotionItem from './EmotionItem';
+import { useNavigate } from 'react-router-dom';
+import { emotionList } from '../util/constants';
+import { getStringedDate } from '../util/get-stringed-date';
 
+// 등록 또는 수정 화면
 const Editor = ({ initData, onSubmit }) => {
   const nav = useNavigate();
+
+  // 초기 데이터 설정
   const [input, setInput] = useState({
     createdDate: new Date(),
     emotionId: 3,
-    content: "",
+    content: '',
   });
 
+  // 수정 시에는 이미 있던 값을 가져옴
   useEffect(() => {
     if (initData) {
-      console.log(initData);
       setInput({
         ...initData,
         createdDate: new Date(Number(initData.createdDate)), // createdDate는 .getTime값으로 넘어오기 때문
@@ -24,12 +27,12 @@ const Editor = ({ initData, onSubmit }) => {
     }
   }, [initData]);
 
-  // 날짜 변경에 대한 반영 (useState update)
+  // 값 변경에 대한 반영 (useState update)
   const onChangeInput = (e) => {
     let name = e.target.name;
     let value = e.target.value;
 
-    if (name === "createdDate") {
+    if (name === 'createdDate') {
       value = new Date(value);
     }
 
@@ -62,7 +65,7 @@ const Editor = ({ initData, onSubmit }) => {
               onClick={() =>
                 onChangeInput({
                   target: {
-                    name: "emotionId",
+                    name: 'emotionId',
                     value: item.emotionId,
                   },
                 })
@@ -84,11 +87,14 @@ const Editor = ({ initData, onSubmit }) => {
         />
       </section>
       <section className="button_section">
-        <Button onClick={() => nav(-1)} text={"취소하기"} />
+        <Button
+          onClick={() => nav(-1)}
+          text={'취소하기'}
+        />
         <Button
           onClick={onClickSubmitButton}
-          text={"작성 완료"}
-          type={"POSITIVE"}
+          text={'작성 완료'}
+          variant="POSITIVE"
         />
       </section>
     </div>
