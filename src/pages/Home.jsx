@@ -19,12 +19,8 @@ const Home = () => {
 
   const monthlyData = getMonthlyData(pivotDate, data);
 
-  const onIncreaseMonth = () => {
-    setPivotDate(new Date(pivotDate.getFullYear(), pivotDate.getMonth() + 1));
-  };
-
-  const onDecreaseMonth = () => {
-    setPivotDate(new Date(pivotDate.getFullYear(), pivotDate.getMonth() - 1));
+  const onChangeMonth = (offset) => {
+    setPivotDate(new Date(pivotDate.getFullYear(), pivotDate.getMonth() + offset));
   };
 
   return (
@@ -33,13 +29,13 @@ const Home = () => {
         title={`${pivotDate.getFullYear()}년 ${pivotDate.getMonth() + 1}월`}
         leftChild={
           <Button
-            onClick={onDecreaseMonth}
+            onClick={() => onChangeMonth(-1)}
             text={'<'}
           />
         }
         rightChild={
           <Button
-            onClick={onIncreaseMonth}
+            onClick={() => onChangeMonth(1)}
             text={'>'}
           />
         }

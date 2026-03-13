@@ -2,29 +2,13 @@ import { createContext, useEffect, useMemo, useReducer, useRef, useState } from 
 import { crudReducer } from '../util/reducer';
 
 // 데이터를 전달할 Context 객체들
-export const DiaryStateContext = createContext();
-export const DiaryDispatchContext = createContext();
-
-// 샘플 데이터 useReducer에 초기값이 있다면
-const mockData = [
-  /*   {
-    id: 1,
-    createdDate: new Date('2026-02-25').getTime(),
-    emotionId: 1,
-    content: '1번 일기 내용',
-  },
-  {
-    id: 2,
-    createdDate: new Date('2026-02-24').getTime(),
-    emotionId: 2,
-    content: '2번 일기 내용',
-  }, */
-];
+export const DiaryStateContext = createContext(); // 전체 일기 데이터를 담을 컨텍스트
+export const DiaryDispatchContext = createContext(); // CRUD 함수를 담을 컨텍스트
 
 export function DiaryProvider({ children }) {
   const [isLoading, setIsLoading] = useState(true);
   // dispatch 호출 시 useReducer가 실행되며 crudReducer 호출
-  const [data, dispatch] = useReducer(crudReducer, []); //  mockData : 초기값, 빈값은 []
+  const [data, dispatch] = useReducer(crudReducer, []); // 빈값은 [], 초기에 불러올 데이터가 있다면 값 세팅
   const idRef = useRef(0); // id 값, 초기값 세팅
 
   useEffect(() => {
